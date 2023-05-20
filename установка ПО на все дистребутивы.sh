@@ -24,7 +24,7 @@ Arch(){
 	sudo pacman -Syu gimp
 	sudo pacman -Syu timeshift
 	sudo pacman -Syu pycharm-community-edition
-	sudo pacman -Syu qtcreator cmake
+	sudo pacman -Syu qtcreator cmake base-devel
 	sudo pacman -Syu python-pip
 	pip3 install django
 	pip3 install pyqt5
