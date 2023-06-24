@@ -34,6 +34,21 @@ ys(){ # функция, которая добавляет дополнитель
 	fi
 }
 
+
+ys_pip_modules(){ # функция, которая устонавливает pip пакеты, если пользователь согласится
+	echo "Устонавить pip пакеты для python?"
+	read -p "Вводите [Д/н]:" y
+	if [ $y == "Д" ]; then
+		echo "установка pip пакетов началась!!!"
+		pip3 install django
+		pip3 install pyqt5
+		pip3 install pyinstaller
+   	else
+        echo "установка pip пакетов отменена!!!"
+	fi
+}
+
+
 Arch(){ # функция, которая устанавливает ПО на Arch или дистребутивы Linux на его основе
 	yv
 	echo "Выбран Arch"
@@ -50,9 +65,8 @@ Arch(){ # функция, которая устанавливает ПО на Ar
 	sudo pacman -Syu qtcreator cmake base-devel
 	sudo pacman -Syu simple-scan
 	sudo pacman -Syu python-pip
-	pip3 install django
-	pip3 install pyqt5
-	pip3 install pyinstaller
+	ys_pip_modules # установка модулей pip
+	sudo pacman -Syu wine winetricks wine-mono wine_gecko zenity
 
 	sudo pacman -Syu libreoffice-fresh-ru
 	# sudo dpkg -i libreoffice-impress-templates-all_2.2-1.deb #установка в либер офис дополнительных слайдов для презентаций
@@ -65,30 +79,35 @@ Arch(){ # функция, которая устанавливает ПО на Ar
 Debian(){ # функция, которая устанавливает ПО на Debian или дистребутивы Linux на его основе
 	yv
 	echo "Выбран Debian"
-	sudo apt install -y qtcreator qtbase5-dev qt5-qmake cmake
+	sudo apt install qtcreator qtbase5-dev qt5-qmake cmake
 	sudo apt install gimp
 	sudo apt install python3
 	sudo apt install python3-pip
-	pip3 install django
-	pip3 install pyqt5
-	pip3 install pyinstaller
-	sudo snap install pycharm-community --classic
+	ys_pip_modules # установка модулей pip
+	# sudo snap install pycharm-community --classic
 	sudo apt install g++
 	sudo apt install timeshift
 	sudo apt install vim
 	sudo apt install git
+	sudo apt install wine winetricks
+	sudo apt install mono-complete
 	# sudo dpkg -i Yandex.deb
+	sudo apt install flatpak
+	flatpak install ru.yandex.Browser
+	
+	#wget -q -O — https://repo.yandex.ru/yandex-browser/YANDEX-BROWSER-KEY.GPG | sudo apt-key add —
+	#sudo sh -c ‘echo «deb [arch=amd64] http://repo.yandex.ru/yandex-browser/deb beta main» > /etc/apt/sources.list.d/yandex-browser-beta.list’
+	#sudo apt update
+	#sudo apt install yandex-browser-beta
 
-	wget -q -O — https://repo.yandex.ru/yandex-browser/YANDEX-BROWSER-KEY.GPG | sudo apt-key add —
-	sudo sh -c ‘echo «deb [arch=amd64] http://repo.yandex.ru/yandex-browser/deb beta main» > /etc/apt/sources.list.d/yandex-browser-beta.list’
-	sudo apt update
-	sudo apt install yandex-browser-beta
 
-
-	#sudo dpkg -i libreoffice-impress-templates-all_2.2-1.deb
+	# sudo dpkg -i libreoffice-impress-templates-all_2.2-1.deb
 	ys # вызов функции для подтверждения установки дополнительных слаидов
-	sudo snap install code --classic # установка vs code
-	sudo snap install vlc
+	flatpak install flathub com.jetbrains.PyCharm-Community
+	flatpak install flathub com.visualstudio.code
+	flatpak install flathub org.videolan.VLC
+	#sudo snap install code --classic # установка vs code
+	#sudo snap install vlc
 	sudo apt --fix-broken install # устранение возможных ошибок в apt
 	sudo apt update
 	sudo apt full-upgrade
