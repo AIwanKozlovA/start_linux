@@ -71,6 +71,7 @@ Arch(){ # функция, которая устанавливает ПО на Ar
 	sudo pacman -Syu libreoffice-fresh-ru
 	# sudo dpkg -i libreoffice-impress-templates-all_2.2-1.deb #установка в либер офис дополнительных слайдов для презентаций
 	ys # вызов функции для подтверждения установки дополнительных слаидов
+	sudo pacman -Syu flatpak
 	flatpak install ru.yandex.Browser # установка яндекс браузера
 	echo "Установка ПО на Arch подобный дистребутив Linux завершена!!!"
 }
