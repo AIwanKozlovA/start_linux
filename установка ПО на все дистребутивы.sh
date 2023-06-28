@@ -92,8 +92,10 @@ Debian(){ # функция, которая устанавливает ПО на 
 	sudo apt install git
 	sudo apt install wine winetricks
 	sudo apt install mono-complete
+	sudo apt install libreoffice-l10n-ru
 	# sudo dpkg -i Yandex.deb
 	sudo apt install flatpak
+	sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 	flatpak install ru.yandex.Browser
 	
 	#wget -q -O — https://repo.yandex.ru/yandex-browser/YANDEX-BROWSER-KEY.GPG | sudo apt-key add —
