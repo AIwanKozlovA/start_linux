@@ -118,8 +118,38 @@ Debian(){ # функция, которая устанавливает ПО на 
 }
 
 
+Fedora(){ # функция, которая устанавливает ПО на Fedora или дистребутивы Linux на его основе
+	yv
+	echo "Выбран Fedora"
+	
+	sudo dnf install gcc
+	sudo dnf install vim
+	sudo dnf install git
+	sudo dnf install qtcreator cmake qt5-designer qt5-*-devel qt5-*-doc
+	sudo dnf install gimp
+	sudo dnf install python3
+	sudo dnf install python3-pip
+	ys_pip_modules # установка модулей pip
+	sudo dnf install timeshift
+	sudo dnf install wine winetricks wine-mono mingw64-wine-gecko.noarch
+	sudo dnf install pycharm-community.x86_64 
+	sudo dnf install dpkg
+	sudo dnf install libreoffice-langpack-ru.x86_64
+	
+	ys # вызов функции для подтверждения установки дополнительных слаидов
+	
+	sudo dnf install flatpak
+	flatpak install ru.yandex.Browser
+	flatpak install flathub com.visualstudio.code
+	flatpak install flathub org.videolan.VLC
+	
+	echo "Установка ПО на Fedora подобный дистребутив Linux завершена!!!"
+}
+
+
 echo "Введите 1, если ваш дистребутив Linux основан на Debian, например Ubuntu, Linux Mint и т.д."
 echo "Введите 2, если ваш дистребутив Linux основан на Arch, например Monjaro, EndeavourOS и т.д."
+echo "Введите 3, если ваш дистребутив Linux основан на Fedora, например Russian Fedora и т.д."
 read -p "Вводите:" num
 if [ "$num" == 1 ]; then 
         echo "Введено 1"
@@ -127,6 +157,9 @@ if [ "$num" == 1 ]; then
 elif [ "$num" == 2 ]; then
         echo "Введено 2"
 	Arch
+elif [ "$num" == 3 ]; then
+        echo "Введено 3"
+	Fedora
 else
 	echo "Вы ввели, что-то не так!!!"
 fi
