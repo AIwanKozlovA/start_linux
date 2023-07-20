@@ -49,6 +49,18 @@ ys_pip_modules(){ # функция, которая устонавливает pi
 }
 
 
+sozdanie_ssilki_flatpak(){ # функция, которая проверяет установлен ли flatpak пакет, если он установлен, то создаётся системная ссылка нанего, чтобы пакет был виден в списке установленых программ
+    if [ -x "$(command -v flatpak)" ]; then # проверка установлен ли сам flatpak, существует ли такая команда
+        #c=$((`flatpak list | grep -c "$1"`))
+        # echo "$c"
+        if [ -f "/var/lib/flatpak/exports/bin/$1" ]; then
+                # sudo ln -s /var/lib/flatpak/exports/bin/com.jetbrains.PyCharm-Community /usr/local/bin/
+                sudo ln -s "/var/lib/flatpak/exports/bin/$1" /usr/local/bin/ # создание ссылки
+        fi
+    fi
+}
+
+
 Arch(){ # функция, которая устанавливает ПО на Arch или дистребутивы Linux на его основе
 	yv
 	echo "Выбран Arch"
@@ -72,8 +84,13 @@ Arch(){ # функция, которая устанавливает ПО на Ar
 	# sudo dpkg -i libreoffice-impress-templates-all_2.2-1.deb #установка в либер офис дополнительных слайдов для презентаций
 	ys # вызов функции для подтверждения установки дополнительных слаидов
 	sudo pacman -Syu flatpak
-	flatpak install ru.yandex.Browser # установка яндекс браузера
+	if [ -x "$(command -v flatpak)" ]; then # проверка установлен ли flatpak, существует ли такая команда
+		flatpak install ru.yandex.Browser # установка яндекс браузера
+		sozdanie_ssilki_flatpak "ru.yandex.Browser" # Создание ссылки, чтобы приложение отображалось в системе
+	fi
+
 	echo "Установка ПО на Arch подобный дистребутив Linux завершена!!!"
+	echo "Рекомендуется перезагрузить компьютер."
 }
 
 
@@ -85,7 +102,6 @@ Debian(){ # функция, которая устанавливает ПО на 
 	sudo apt install python3
 	sudo apt install python3-pip
 	ys_pip_modules # установка модулей pip
-	# sudo snap install pycharm-community --classic
 	sudo apt install g++
 	sudo apt install timeshift
 	sudo apt install vim
@@ -93,28 +109,28 @@ Debian(){ # функция, которая устанавливает ПО на 
 	sudo apt install wine winetricks
 	sudo apt install mono-complete
 	sudo apt install libreoffice-l10n-ru
-	# sudo dpkg -i Yandex.deb
+	
 	sudo apt install flatpak
 	sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-	flatpak install ru.yandex.Browser
-	
-	#wget -q -O — https://repo.yandex.ru/yandex-browser/YANDEX-BROWSER-KEY.GPG | sudo apt-key add —
-	#sudo sh -c ‘echo «deb [arch=amd64] http://repo.yandex.ru/yandex-browser/deb beta main» > /etc/apt/sources.list.d/yandex-browser-beta.list’
-	#sudo apt update
-	#sudo apt install yandex-browser-beta
+	if [ -x "$(command -v flatpak)" ]; then # проверка установлен ли flatpak, существует ли такая команда
+		flatpak install ru.yandex.Browser
+		sozdanie_ssilki_flatpak "ru.yandex.Browser" # Создание ссылки, чтобы приложение отображалось в системе
 
 
-	# sudo dpkg -i libreoffice-impress-templates-all_2.2-1.deb
-	ys # вызов функции для подтверждения установки дополнительных слаидов
-	flatpak install flathub com.jetbrains.PyCharm-Community
-	flatpak install flathub com.visualstudio.code
-	flatpak install flathub org.videolan.VLC
-	#sudo snap install code --classic # установка vs code
-	#sudo snap install vlc
+		flatpak install flathub com.jetbrains.PyCharm-Community
+		sozdanie_ssilki_flatpak "com.jetbrains.PyCharm-Community" # Создание ссылки, чтобы приложение отображалось в системе
+
+		flatpak install flathub com.visualstudio.code
+		sozdanie_ssilki_flatpak "com.visualstudio.code" # Создание ссылки, чтобы приложение отображалось в системе
+
+		flatpak install flathub org.videolan.VLC
+		sozdanie_ssilki_flatpak "org.videolan.VLC" # Создание ссылки, чтобы приложение отображалось в системе
+	fi
 	sudo apt --fix-broken install # устранение возможных ошибок в apt
 	sudo apt update
 	sudo apt full-upgrade
 	echo "Установка ПО на Debian подобный дистребутив Linux завершена!!!"
+	echo "Рекомендуется перезагрузить компьютер."
 }
 
 
@@ -139,11 +155,13 @@ Fedora(){ # функция, которая устанавливает ПО на 
 	ys # вызов функции для подтверждения установки дополнительных слаидов
 	
 	sudo dnf install flatpak
-	flatpak install ru.yandex.Browser
-	flatpak install flathub com.visualstudio.code
-	flatpak install flathub org.videolan.VLC
-	
+	if [ -x "$(command -v flatpak)" ]; then # проверка установлен ли flatpak, существует ли такая команда
+		flatpak install ru.yandex.Browser
+		flatpak install flathub com.visualstudio.code
+		flatpak install flathub org.videolan.VLC
+	fi
 	echo "Установка ПО на Fedora подобный дистребутив Linux завершена!!!"
+	echo "Рекомендуется перезагрузить компьютер."
 }
 
 
