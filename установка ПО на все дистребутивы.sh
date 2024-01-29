@@ -14,7 +14,7 @@ yv(){ # функция, которая спрашивает подтвержде
 	echo "Начать установку ПО?"
 	read -p "Вводите [Д/н]:" y
 	echo "$y"
-	if [ $y == "Д" ]; then
+	if [ $y == "Д" ] || [ $y == "y" ]; then
 		echo "установка началась!!!"
 	else
 		echo "установка отменена!!!"
@@ -26,7 +26,7 @@ yv(){ # функция, которая спрашивает подтвержде
 ys(){ # функция, которая добавляет дополнительные слаиды в программу LibreOffice Impress, если пользователь согласится
 	echo "Добавить дополнительные слаиды в программу LibreOffice Impress?"
 	read -p "Вводите [Д/н]:" y
-	if [ $y == "Д" ]; then
+	if [ $y == "Д" ] || [ $y == "y" ]; then
 		echo "установка дополнительных слаидов началась!!!"
 		sudo dpkg -i libreoffice-impress-templates-all_2.2-1.deb #установка в либер офис дополнительных слайдов для презентаций
     else
@@ -34,11 +34,26 @@ ys(){ # функция, которая добавляет дополнитель
 	fi
 }
 
+av(){ # функция, которая спрашивает у пользователя включить ли режим автоматической установки
+	echo "Включить режим автоматической установки ПО?"
+	echo "Установка пройдёт быстрее, но при выборе ручной устаноки вы можете настроить свой компьютер более детально."
+	read -p "Вводите [Д/н]:" y
+	echo "$y"
+	if [ $y == "Д" ] || [ $y == "y" ]; then
+		echo "Автоматическая установка началась!!!"
+		yes "y" | $1 # включение режима автоматической	установки
+	else
+		echo "Выбрана ручная установка!!!"
+		$1
+	fi
+
+}
+
 
 ys_pip_modules(){ # функция, которая устонавливает pip пакеты, если пользователь согласится
 	echo "Устонавить pip пакеты для python?"
 	read -p "Вводите [Д/н]:" y
-	if [ $y == "Д" ]; then
+	if [ $y == "Д" ] || [ $y == "y" ]; then
 		echo "установка pip пакетов началась!!!"
 		pip3 install django
 		pip3 install pyqt5
@@ -68,7 +83,7 @@ Arch(){ # функция, которая устанавливает ПО на Ar
 		sudo pacman -Syu gcc
 		sudo pacman -Syu vim
 		sudo pacman -Syu git
-		sudo pacman -Syu dpkg
+		sudo pacman -Syu dpkg|| [ $y == "y" ]
 		sudo pacman -Syu code
 		sudo pacman -Syu vlc
 		sudo pacman -Syu gimp
@@ -83,14 +98,21 @@ Arch(){ # функция, которая устанавливает ПО на Ar
 
 		sudo pacman -Syu libreoffice-fresh-ru
 		# sudo dpkg -i libreoffice-impress-templates-all_2.2-1.deb #установка в либер офис дополнительных слайдов для презентаций
-		
+
 		if [ -x "$(command -v dpkg)" ]; then
 			ys # вызов функции для подтверждения установки дополнительных слаидов
 		fi
 		sudo pacman -Syu flatpak
 		if [ -x "$(command -v flatpak)" ]; then # проверка установлен ли flatpak, существует ли такая команда
-			flatpak install ru.yandex.Browser # установка яндекс браузера
-			sozdanie_ssilki_flatpak "ru.yandex.Browser" # Создание ссылки, чтобы приложение отображалось в системе
+			if [ $y == "Д" ] || [ $y == "y" ]; then
+				echo "Автоматическая установка flatpak пакетов началась!!!"
+				# flatpak не работает с командой yes поэтому необходимо вручную прописовать флаг -y для автоматической установки
+				flatpak -y install ru.yandex.Browser # установка яндекс браузера
+				sozdanie_ssilki_flatpak "ru.yandex.Browser" # Создание ссылки, чтобы приложение отображалось в системе
+			else
+				flatpak install ru.yandex.Browser # установка яндекс браузера
+				sozdanie_ssilki_flatpak "ru.yandex.Browser" # Создание ссылки, чтобы приложение отображалось в системе
+			fi
 		fi
 
 		echo "Установка ПО на Arch подобный дистребутив Linux завершена!!!"
@@ -118,26 +140,48 @@ Debian(){ # функция, которая устанавливает ПО на 
 		sudo apt install mono-complete
 		sudo apt install libreoffice-l10n-ru
 		sudo apt install dpkg
-		
+
 		if [ -x "$(command -v dpkg)" ]; then
 			ys # вызов функции для подтверждения установки дополнительных слаидов
 		fi
-		
+
 		sudo apt install flatpak
 		sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 		if [ -x "$(command -v flatpak)" ]; then # проверка установлен ли flatpak, существует ли такая команда
-			flatpak install ru.yandex.Browser
-			sozdanie_ssilki_flatpak "ru.yandex.Browser" # Создание ссылки, чтобы приложение отображалось в системе
+			echo "Установить автоматически flatpak пакеты ?"
+			read -p "Вводите [Д/н]:" y
+			if [ $y == "Д" ] || [ $y == "y" ]; then
+				echo "Автоматическая установка flatpak пакетов началась!!!"
+				# flatpak не работает с командой yes поэтому необходимо вручную прописовать флаг -y для автоматической установки
+				flatpak -y install ru.yandex.Browser
+				sozdanie_ssilki_flatpak "ru.yandex.Browser" # Создание ссылки, чтобы приложение отображалось в системе
 
 
-			flatpak install flathub com.jetbrains.PyCharm-Community
-			sozdanie_ssilki_flatpak "com.jetbrains.PyCharm-Community" # Создание ссылки, чтобы приложение отображалось в системе
+				flatpak -y install flathub com.jetbrains.PyCharm-Community
+				sozdanie_ssilki_flatpak "com.jetbrains.PyCharm-Community" # Создание ссылки, чтобы приложение отображалось в системе
 
-			flatpak install flathub com.visualstudio.code
-			sozdanie_ssilki_flatpak "com.visualstudio.code" # Создание ссылки, чтобы приложение отображалось в системе
+				flatpak -y install flathub com.visualstudio.code
+				sozdanie_ssilki_flatpak "com.visualstudio.code" # Создание ссылки, чтобы приложение отображалось в системе
 
-			flatpak install flathub org.videolan.VLC
-			sozdanie_ssilki_flatpak "org.videolan.VLC" # Создание ссылки, чтобы приложение отображалось в системе
+				flatpak -y install flathub org.videolan.VLC
+				sozdanie_ssilki_flatpak "org.videolan.VLC" # Создание ссылки, чтобы приложение отображалось в системе
+				
+		   	else
+		   		echo "Выбрана ручная установка!!!"
+				flatpak install ru.yandex.Browser
+				sozdanie_ssilki_flatpak "ru.yandex.Browser" # Создание ссылки, чтобы приложение отображалось в системе
+
+
+				flatpak install flathub com.jetbrains.PyCharm-Community
+				sozdanie_ssilki_flatpak "com.jetbrains.PyCharm-Community" # Создание ссылки, чтобы приложение отображалось в системе
+
+				flatpak install flathub com.visualstudio.code
+				sozdanie_ssilki_flatpak "com.visualstudio.code" # Создание ссылки, чтобы приложение отображалось в системе
+
+				flatpak install flathub org.videolan.VLC
+				sozdanie_ssilki_flatpak "org.videolan.VLC" # Создание ссылки, чтобы приложение отображалось в системе
+			fi
+			
 		fi
 		sudo apt --fix-broken install # устранение возможных ошибок в apt
 		sudo apt update
@@ -154,7 +198,7 @@ Fedora(){ # функция, которая устанавливает ПО на 
 	if [ -x "$(command -v dnf)" ]; then # проверка правильно ли выбрана ветвь дистребутивов. Сущетвует ли команда dnf
 		yv
 		echo "Выбран Fedora"
-		
+
 		sudo dnf install gcc
 		sudo dnf install vim
 		sudo dnf install git
@@ -165,19 +209,30 @@ Fedora(){ # функция, которая устанавливает ПО на 
 		ys_pip_modules # установка модулей pip
 		sudo dnf install timeshift
 		sudo dnf install wine winetricks wine-mono mingw64-wine-gecko.noarch
-		sudo dnf install pycharm-community.x86_64 
+		sudo dnf install pycharm-community.x86_64
 		sudo dnf install dpkg
 		sudo dnf install libreoffice-langpack-ru.x86_64
-		
+
 		if [ -x "$(command -v dpkg)" ]; then
 			ys # вызов функции для подтверждения установки дополнительных слаидов
 		fi
-		
+
 		sudo dnf install flatpak
 		if [ -x "$(command -v flatpak)" ]; then # проверка установлен ли flatpak, существует ли такая команда
-			flatpak install ru.yandex.Browser
-			flatpak install flathub com.visualstudio.code
-			flatpak install flathub org.videolan.VLC
+			echo "Установить автоматически flatpak пакеты ?"
+			read -p "Вводите [Д/н]:" y
+			if [ $y == "Д" ] || [ $y == "y" ]; then
+				echo "Автоматическая установка flatpak пакетов началась!!!"
+				# flatpak не работает с командой yes поэтому необходимо вручную прописовать флаг -y для автоматической установки
+				flatpak -y install ru.yandex.Browser
+				flatpak -y install flathub com.visualstudio.code
+				flatpak -y install flathub org.videolan.VLC
+			else
+				echo "Выбрана ручная установка!!!"
+				flatpak install ru.yandex.Browser
+				flatpak install flathub com.visualstudio.code
+				flatpak install flathub org.videolan.VLC
+			fi
 		fi
 		echo "Установка ПО на Fedora подобный дистребутив Linux завершена!!!"
 		echo "Рекомендуется перезагрузить компьютер."
@@ -191,16 +246,15 @@ echo "Введите 1, если ваш дистребутив Linux основ�
 echo "Введите 2, если ваш дистребутив Linux основан на Arch, например Monjaro, EndeavourOS и т.д."
 echo "Введите 3, если ваш дистребутив Linux основан на Fedora, например Russian Fedora и т.д."
 read -p "Вводите:" num
-if [ "$num" == 1 ]; then 
-        echo "Введено 1"
-	Debian
+if [ "$num" == 1 ]; then
+	echo "Введено 1"
+	av Debian
 elif [ "$num" == 2 ]; then
-        echo "Введено 2"
-	Arch
+	echo "Введено 2"
+	av Arch
 elif [ "$num" == 3 ]; then
-        echo "Введено 3"
-	Fedora
+	echo "Введено 3"
+	av Fedora
 else
 	echo "Вы ввели, что-то не так!!!"
 fi
-
